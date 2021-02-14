@@ -1,22 +1,21 @@
-import time
 from socket import socket, AF_INET, SOCK_STREAM
+from sys import argv
 
-from common.configs import HOST, PORT
-from common.utils import send_message
+from common.utils import get_addr, send_message, presence_request, get_data_from_message, hand_client_msg
 
+addr, port = get_addr(argv, 'common/configs.json')
 s = socket(AF_INET, SOCK_STREAM)
-s.bind((HOST, PORT))
+s.bind(('', int(port)))
 s.listen(5)
 
 while True:
     client, addr = s.accept()
-    data = client.recv(4096)
-    print(data.decode('utf-8'))
+    send_message(client, presence_request)
 
-    msg = msg_response = {
-        "response": '200',
-        "time": int(time.time()),
-    }
+    data = (client.recv(4096))
+    msg = get_data_from_message(data)
 
-    client.send(bytes(send_message(msg).encode('utf-8')))
+    res = hand_client_msg(data)
+
+    send_message(client, res)
     client.close()

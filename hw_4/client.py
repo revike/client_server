@@ -1,22 +1,16 @@
-import time
 from socket import socket, AF_INET, SOCK_STREAM
-from common.configs import HOST, PORT
-from common.utils import send_message, get_data_from_message
+from sys import argv
 
+from common.utils import get_data_from_message, get_addr, parsing_server
+
+addr, port = get_addr(argv, 'common/configs.json')
 s = socket(AF_INET, SOCK_STREAM)
-connect = s.connect((HOST, PORT))
+connect = s.connect((addr, int(port)))
 
-msg = {
-        "action": "presence",
-        "time": int(time.time()),
-        "type": "status",
-        "user": {
-            "account_name": "Evgenii",
-            "status": "Yep, I am here!"
-        }
-    }
+data = s.recv(4096)
+if data:
+    server_msg = get_data_from_message(data)
+    server_resp, msg_type = parsing_server(s, server_msg)
+    print(server_resp)
 
-s.send(bytes(send_message(msg).encode('utf-8')))
-data = get_data_from_message(s.recv(4096))
-print(data)
 s.close()
