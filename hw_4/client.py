@@ -1,7 +1,8 @@
 from socket import socket, AF_INET, SOCK_STREAM
 from sys import argv
 
-from common.utils import get_data_from_message, get_addr, parsing_server
+from common.utils import get_data_from_message, get_addr
+from server import parsing_server
 
 addr, port = get_addr(argv, 'common/configs.json')
 s = socket(AF_INET, SOCK_STREAM)
